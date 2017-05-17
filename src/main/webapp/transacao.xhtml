@@ -1,0 +1,204 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:o="http://omnifaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+    <ui:define name="title">Gerenciamento de Transações</ui:define>
+
+    <ui:define name="viewname">Gerenciamento de Transações</ui:define>
+
+    <ui:define name="content">
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <div class="card">
+                    <h1>Cadastro de Transações</h1>
+                    <p>Utilize essa página para cadastrar e consultar as transações diárias.</p>
+                    <p:messages autoUpdate="true"/>
+                    <f:metadata>
+                        <f:viewParam name="ano" value="#{transacaoController.ano}"/>
+                        <f:viewParam name="mes" value="#{transacaoController.mes}"/>
+                        <f:viewAction action="#{transacaoController.init()}"/>
+                    </f:metadata>
+                    <o:importConstants type="com.hfluz.accounting.model.enumeration.CategoriaTransacao"
+                                       var="CategoriaTransacao"/>
+                    <o:importConstants type="com.hfluz.accounting.model.enumeration.TipoPagamento" var="TipoPagamento"/>
+                    <o:importConstants type="com.hfluz.accounting.model.enumeration.TipoTransacao" var="TipoTransacao"/>
+                    <o:importConstants type="com.hfluz.accounting.model.enumeration.Mes" var="Mes"/>
+                    <h:form prependId="false">
+                        <p:toolbar>
+                            <p:toolbarGroup align="right">
+                                <p:commandButton value="Nova Transação" action="#{transacaoController.resetarTransacao()}"
+                                                 update="transacaoDiv" oncomplete="PF('transacaoDlg').show()"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                        <p:fieldset id="fieldset">
+                            <p:panelGrid columns="4"
+                                         columnClasses="ui-grid-col-1,ui-grid-col-1,ui-grid-col-1,ui-grid-col-2"
+                                         layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
+                                <p:outputLabel for="ano" value="Ano"/>
+                                <p:inputText id="ano" value="#{transacaoController.ano}">
+                                    <p:ajax event="keyup" listener="#{transacaoController.carregarTransacoes()}"
+                                            update="datatable"
+                                            process="fieldset"/>
+                                </p:inputText>
+                                <p:outputLabel for="mes" value="Mês"/>
+                                <p:selectOneMenu id="mes" value="#{transacaoController.mes}">
+                                    <f:selectItems value="#{Mes.values()}" var="m" itemValue="#{m.codigo}"
+                                                   itemLabel="#{m.nome}"/>
+                                    <p:ajax event="change" listener="#{transacaoController.carregarTransacoes()}"
+                                            update="datatable"
+                                            process="fieldset"/>
+                                </p:selectOneMenu>
+                            </p:panelGrid>
+                        </p:fieldset>
+
+                        <p:dataTable id="datatable" value="#{transacaoController.transacoes}" var="t"
+                                     emptyMessage="Nenhuma transação foi encontrada para o mês/ano especificado.">
+                            <p:column headerText="Data" width="70">
+                                <h:outputText value="#{t.date}"/>
+                            </p:column>
+                            <p:column headerText="Tipo Transação" width="115">
+                                #{t.tipoTransacao}
+                            </p:column>
+                            <p:column headerText="Descrição">
+                                #{t.descricao} <span jsf:rendered="#{t.idPrimeiraParcela != null}"> (parcela #{t.parcela})</span>
+                            </p:column>
+                            <p:column headerText="Tipo Pagamento" width="115">
+                                #{t.tipoPagamento}
+                            </p:column>
+                            <p:column headerText="Categoria" width="150">
+                                #{t.categoria}
+                            </p:column>
+                            <p:column headerText="Estabelecimento" width="200">
+                                #{t.estabelecimento}
+                            </p:column>
+                            <p:column headerText="Valor" width="90">
+                                <h:outputText value="#{t.valor}">
+                                    <f:convertNumber type="currency"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Ações" width="66">
+                                <p:commandButton icon="ui-icon-pencil" oncomplete="PF('transacaoDlg').show()"
+                                                 update="transacaoDiv">
+                                    <f:setPropertyActionListener value="#{t}"
+                                                                 target="#{transacaoController.transacao}"/>
+                                </p:commandButton>
+                                <p:commandButton icon="ui-icon-trash" action="#{transacaoController.excluir(t)}"
+                                                 update="datatable">
+                                    <p:confirm header="Confirmação"
+                                               message="Você tem certeza que deseja excluir a transação #{t.descricao} realizada no dia #{t.date}?"
+                                               icon="ui-icon-alert"/>
+                                </p:commandButton>
+                            </p:column>
+
+                            <f:facet name="footer">
+                                <div align="right">
+                                    <table style="width: 210px; text-align: right"
+                                           class="tabela-sem-borda tabela-sem-padding">
+                                        <tr>
+                                            <td style="width: 120px"><strong>Total Receitas:</strong></td>
+                                            <td><strong>
+                                                <h:outputText value="#{transacaoController.valorTotalReceitas}">
+                                                    <f:convertNumber type="currency"/>
+                                                </h:outputText>
+                                            </strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Total Despesas:</strong></td>
+                                            <td><strong>
+                                                <h:outputText value="#{transacaoController.valorTotalDespesas}">
+                                                    <f:convertNumber type="currency"/>
+                                                </h:outputText>
+                                            </strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Saldo do mês:</strong></td>
+                                            <td><strong>
+                                                <h:outputText
+                                                        value="#{transacaoController.valorTotalReceitas - transacaoController.valorTotalDespesas}">
+                                                    <f:convertNumber type="currency"/>
+                                                </h:outputText>
+                                            </strong></td>
+                                        </tr>
+
+                                    </table>
+                                </div>
+                            </f:facet>
+                        </p:dataTable>
+                        <p:dialog widgetVar="transacaoDlg" responsive="true" width="650">
+                            <div jsf:id="transacaoDiv">
+                                <div jsf:rendered="#{not empty transacaoController.transacao}">
+                                    <div class="ui-fluid">
+                                        <p:panelGrid columns="2"
+                                                     columnClasses="ui-grid-col-3,ui-grid-col-9"
+                                                     layout="grid" styleClass="ui-panelgrid-blank">
+                                            <p:outputLabel for="tipoTransacao" value="Tipo de Transação"/>
+                                            <p:selectOneMenu id="tipoTransacao" autoWidth="false"
+                                                             value="#{transacaoController.transacao.tipoTransacao}">
+                                                <f:selectItem itemValue="#{null}" itemLabel="Selecione uma opção"/>
+                                                <f:selectItems value="#{TipoTransacao.values()}" var="tt"/>
+                                                <p:ajax event="change" update="transacaoDiv"/>
+                                            </p:selectOneMenu>
+                                        </p:panelGrid>
+                                        <div jsf:rendered="#{TipoTransacao.DESPESA eq transacaoController.transacao.tipoTransacao}">
+                                            <p:panelGrid columns="2"
+                                                         columnClasses="ui-grid-col-3,ui-grid-col-9"
+                                                         layout="grid" styleClass="ui-panelgrid-blank">
+                                                <p:outputLabel for="tipoPagamento" value="Tipo de Pagamento"/>
+                                                <p:selectOneMenu id="tipoPagamento" autoWidth="false"
+                                                                 value="#{transacaoController.transacao.tipoPagamento}">
+                                                    <f:selectItem itemValue="#{null}" itemLabel="Selecione uma opção"/>
+                                                    <f:selectItems value="#{TipoPagamento.values()}" var="tt"/>
+                                                    <p:ajax event="change" update="transacaoDiv"/>
+                                                </p:selectOneMenu>
+                                                <p:outputLabel for="categoria" value="Categoria"/>
+                                                <p:selectOneMenu id="categoria"
+                                                                 value="#{transacaoController.transacao.categoria}">
+                                                    <f:selectItem itemValue="#{null}" itemLabel="Selecione uma opção"/>
+                                                    <f:selectItems value="#{CategoriaTransacao.values()}" var="tt"/>
+                                                </p:selectOneMenu>
+                                            </p:panelGrid>
+                                        </div>
+                                        <p:panelGrid columns="2" rendered="#{TipoPagamento.CARTAO_CREDITO eq transacaoController.transacao.tipoPagamento}"
+                                                     columnClasses="ui-grid-col-3,ui-grid-col-9"
+                                                     layout="grid" styleClass="ui-panelgrid-blank">
+                                            <p:outputLabel for="parcelas" value="Quantidade parcelas"/>
+                                            <p:inputText id="parcelas"
+                                                           value="#{transacaoController.quantidadeParcelas}"  />
+                                        </p:panelGrid>
+                                        <p:panelGrid columns="2"
+                                                     columnClasses="ui-grid-col-3,ui-grid-col-9"
+                                                     layout="grid" styleClass="ui-panelgrid-blank">
+                                            <p:outputLabel for="data" value="Data"/>
+                                            <p:calendar id="data" value="#{transacaoController.transacao.date}"/>
+                                            <p:outputLabel for="descricao" value="Descrição"/>
+                                            <p:inputTextarea id="descricao"
+                                                             value="#{transacaoController.transacao.descricao}"/>
+                                            <p:outputLabel for="estabelecimento" value="Estabelecimento"/>
+                                            <p:inputText id="estabelecimento"
+                                                         value="#{transacaoController.transacao.estabelecimento}"/>
+                                            <p:outputLabel for="valor" value="Valor"/>
+                                            <p:inputNumber id="valor" value="#{transacaoController.transacao.valor}"
+                                            />
+                                        </p:panelGrid>
+                                    </div>
+                                    <p:commandButton value="Salvar" action="#{transacaoController.salvar()}"
+                                                     update="datatable,menuform:barra_orcamento"/>
+                                </div>
+                            </div>
+                        </p:dialog>
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes"
+                                             icon="ui-icon-check"/>
+                            <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no"
+                                             icon="ui-icon-close"/>
+                        </p:confirmDialog>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

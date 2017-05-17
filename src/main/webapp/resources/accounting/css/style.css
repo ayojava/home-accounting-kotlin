@@ -1,0 +1,19 @@
+.tabela-sem-borda, .tabela-sem-borda tr, .tabela-sem-borda th, .tabela-sem-borda td {
+    border-width: 0 !important;
+}
+
+.tabela-sem-padding td {
+    padding: 0 !important;
+}
+
+.layout-wrapper .topbar .logo {
+    background: url(https://cdn3.iconfinder.com/data/icons/real-estate-3/256/Mortgage_Calculator-512.png) left top / 49px 49px no-repeat !important;
+}
+
+.layout-wrapper .topbar .logo-text {
+    margin-top: -46px;
+    margin-left: -120px;
+    width: 302px;
+    height: 50px;
+    background: url("#{resource['accounting:images/bitmap.png']}") right top / 120px 49px no-repeat !important;
+}

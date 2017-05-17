@@ -1,0 +1,35 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:pp="http://primefaces.org/poseidon" xmlns:jsf="http://xmlns.jcp.org/jsf">
+    
+    <h:form id="menuform"> 
+        <div class="layout-menu-container">
+            <div class="nano">
+                <div class="nano-content menu-scroll-content">
+                    <div class="search-input">
+                        <input type="text" placeholder="Search"/>
+                        <i class="fa fa-search"></i>
+                    </div>
+                    <pp:menu widgetVar="me">
+                        <p:menuitem id="transacao_menuitem" value="Transações" icon="fa fa-fw fa-shopping-bag" outcome="/transacao"/>
+                        <p:menuitem id="resumo_menuitem" value="Resumo Últimos Meses" icon="fa fa-fw fa-history" outcome="/resumoUltimosMeses"/>
+                        <p:menuitem id="graficos_categoria_menuitem" value="Gráficos Categorias" icon="fa fa-fw fa-line-chart" outcome="/chart/categoria" />
+                        <p:menuitem id="grafico_receitas_despesas_menuitem" value="Gráfico Receitas x Despesas" icon="fa fa-fw fa-bar-chart" outcome="/chart/tipoTransacao" />
+                        <p:menuitem id="grafico_distribuicao_dias_menuitem" value="Gráfico Distr. Gastos Mês" icon="fa fa-fw fa-bar-chart" outcome="/chart/distribuicaoDias" />
+                    </pp:menu>
+                    
+                    <div jsf:id="barra_orcamento" class="layout-menu-footer">
+                        <span class="layout-menu-footer-title">Uso do Orçamento</span>
+                        
+                        <p:progressBar value="#{situacaoMesController.porcentagemOrcamento}" labelTemplate="" displayOnly="true"/>
+                        Mês Atual
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </h:form>
+</ui:composition>

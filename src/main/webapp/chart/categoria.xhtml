@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                template="/WEB-INF/template.xhtml">
+    <ui:define name="title">Gráficos de despesas de cada categoria</ui:define>
+
+    <ui:define name="viewname">Gráficos de despesas de cada categoria</ui:define>
+
+    <ui:define name="content">
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <div class="card">
+                    <h1>Gráficos de despesas de cada categoria</h1>
+                    <f:metadata>
+                        <f:viewAction action="#{categoriaTransacaoChartController.init()}"/>
+                    </f:metadata>
+                    <h:outputScript name="js/jqplot.dateAxisRenderer.js" library="accounting"/>
+                    <ui:repeat value="#{categoriaTransacaoChartController.categoriaCharts}" var="chart">
+                        <p:chart type="line" model="#{chart}" style="height: 300px" />
+                        <br/>
+                        <hr/>
+                        <br/>
+                    </ui:repeat>
+                </div>
+            </div>
+        </div>
+
+
+    </ui:define>
+
+</ui:composition>

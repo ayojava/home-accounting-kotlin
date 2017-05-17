@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <f:facet name="first">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+    </f:facet>
+    <title>Home Accounting</title>
+</h:head>
+
+<h:body styleClass="login-body">
+    <form id="loginForm" action="j_security_check" method="post">
+        <div class="login-panel ui-fluid">
+            <div class="ui-g">
+                <div class="ui-g-12 logo-container">
+                    <p:graphicImage name="images/login/login-logo.png" library="poseidon-layout"/>
+                </div>
+                <div class="ui-g-12">
+                    <p:inputText placeholder="Username" id="j_username" name="j_username"/>
+                </div>
+                <div class="ui-g-12">
+                    <p:password placeholder="Password" feedback="false" id="j_password" name="j_password"/>
+                </div>
+                <div class="ui-g-12 button-container">
+                    <button type="submit" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left turquoise-btn">
+                        <span class="ui-button-icon-left ui-icon ui-c fa fa-user"></span>
+                        <span class="ui-button-text ui-c">Log In</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <h:outputStylesheet name="css/layout-turquoise.css" library="poseidon-layout"/>
+</h:body>
+
+</html>
