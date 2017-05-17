@@ -17,3 +17,7 @@
     height: 50px;
     background: url("#{resource['accounting:images/bitmap.png']}") right top / 120px 49px no-repeat !important;
 }
+
+.layout-wrapper .layout-menu{
+    padding-top: 32px;
+}

@@ -21,23 +21,19 @@ class LocalDateConverter : Converter, PartialStateHolder {
     private var initialState: Boolean = false
 
     override fun getAsObject(pFacesCtx: FacesContext, pComponent: UIComponent, value: String?): Any? {
-        println("localDateConverter getAsObject")
         if (value == null || value.isEmpty()) {
             return null
         }
-        println("value " + value)
         return LocalDate.parse(value, formatter)
     }
 
     override fun getAsString(pFacesCtx: FacesContext, pComponent: UIComponent, value: Any?): String {
-        println("localDateConverter getAsString")
         if (value == null) {
             return ""
         }
 
         if (value is LocalDate) {
             val retorno = formatter.format((value as LocalDate?)!!)
-            println("retorno " + retorno)
             return retorno
         }
 
