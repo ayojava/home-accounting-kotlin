@@ -7,14 +7,13 @@ import com.hfluz.accounting.model.enumeration.TipoPagamento
 import com.hfluz.accounting.model.enumeration.TipoTransacao
 import org.omnifaces.util.Messages
 import org.primefaces.context.RequestContext
-
+import java.io.Serializable
+import java.math.BigDecimal
+import java.time.LocalDate
 import javax.faces.view.ViewScoped
 import javax.inject.Inject
 import javax.inject.Named
 import javax.validation.constraints.NotNull
-import java.io.Serializable
-import java.math.BigDecimal
-import java.time.LocalDate
 
 /**
  * Created by hfluz on 03/05/17.
@@ -31,7 +30,6 @@ class TransacaoController(val now: LocalDate = LocalDate.now(),
 ) : Serializable {
 
     var transacoes: List<Transacao>? = null
-        private set
 
     /**
      * Utilizada se o tipo de pagamento for cartão de crédito.
@@ -67,6 +65,7 @@ class TransacaoController(val now: LocalDate = LocalDate.now(),
         carregarTransacoes()
         RequestContext.getCurrentInstance().execute("PF('transacaoDlg').hide()")
         Messages.addGlobalInfo("Transação " + transacao.descricao + " salva com sucesso.")
+        resetarTransacao()
     }
 
     private fun salvarTransacoesParcelamento() {
@@ -86,7 +85,6 @@ class TransacaoController(val now: LocalDate = LocalDate.now(),
             transacao.date = transacao.date?.plusMonths(1)
         }
         quantidadeParcelas = 1
-        resetarTransacao()
     }
 
     fun excluir(transacao: Transacao) {
@@ -95,12 +93,12 @@ class TransacaoController(val now: LocalDate = LocalDate.now(),
     }
 
     val valorTotalReceitas: BigDecimal
-        get() = transacoes?.filter{ TipoTransacao.RECEITA == it.tipoTransacao }
-                ?.map{ it.valor }
-                ?.reduce{ a, b -> a?.add(b) } ?: BigDecimal.ZERO
+        get() = transacoes?.filter { TipoTransacao.RECEITA == it.tipoTransacao }
+                ?.map { it.valor }
+                ?.fold(BigDecimal.ZERO) { a, b -> a.add(b) } ?: BigDecimal.ZERO
 
     val valorTotalDespesas: BigDecimal
-        get() = transacoes?.filter{ TipoTransacao.DESPESA == it.tipoTransacao }
-                ?.map{ it.valor }
-                ?.reduce{ a, b -> a?.add(b) } ?: BigDecimal.ZERO
+        get() = transacoes?.filter { TipoTransacao.DESPESA == it.tipoTransacao }
+                ?.map { it.valor }
+                ?.fold(BigDecimal.ZERO) { a, b -> a.add(b) } ?: BigDecimal.ZERO
 }
