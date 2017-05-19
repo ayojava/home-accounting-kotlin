@@ -2,6 +2,7 @@ package com.hfluz.accounting.controller
 
 import com.hfluz.accounting.dao.TransacaoDAO
 import com.hfluz.accounting.model.enumeration.TipoTransacao
+import com.hfluz.accounting.util.somarTransacoes
 import java.io.Serializable
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -26,12 +27,8 @@ class SituacaoMesController : Serializable {
     fun init() {
         val now = LocalDate.now()
         val transacoes = transacaoDAO.buscar(now.monthValue, now.year)
-        val totalReceitas = transacoes.filter { TipoTransacao.RECEITA == it.tipoTransacao }
-                .map { it.valor }
-                .fold(BigDecimal.ZERO) { a, b -> a.add(b) }
-        val totalDespesas = transacoes.filter { TipoTransacao.DESPESA == it.tipoTransacao }
-                .map { it.valor }
-                .fold(BigDecimal.ZERO) { a, b -> a.add(b) }
+        val totalReceitas = somarTransacoes(transacoes,TipoTransacao.RECEITA)
+        val totalDespesas = somarTransacoes(transacoes,TipoTransacao.DESPESA)
         if (totalReceitas == BigDecimal.ZERO) {
             porcentagemOrcamento = 0
         } else if (totalDespesas >= totalReceitas) {

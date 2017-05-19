@@ -5,6 +5,7 @@ import com.hfluz.accounting.model.Transacao
 import com.hfluz.accounting.model.enumeration.CategoriaTransacao
 import com.hfluz.accounting.model.enumeration.TipoPagamento
 import com.hfluz.accounting.model.enumeration.TipoTransacao
+import com.hfluz.accounting.util.somarTransacoes
 import org.omnifaces.util.Messages
 import org.primefaces.context.RequestContext
 import java.io.Serializable
@@ -93,12 +94,8 @@ class TransacaoController(val now: LocalDate = LocalDate.now(),
     }
 
     val valorTotalReceitas: BigDecimal
-        get() = transacoes?.filter { TipoTransacao.RECEITA == it.tipoTransacao }
-                ?.map { it.valor }
-                ?.fold(BigDecimal.ZERO) { a, b -> a.add(b) } ?: BigDecimal.ZERO
+        get() = somarTransacoes(transacoes,TipoTransacao.RECEITA)
 
     val valorTotalDespesas: BigDecimal
-        get() = transacoes?.filter { TipoTransacao.DESPESA == it.tipoTransacao }
-                ?.map { it.valor }
-                ?.fold(BigDecimal.ZERO) { a, b -> a.add(b) } ?: BigDecimal.ZERO
+        get() = somarTransacoes(transacoes,TipoTransacao.DESPESA)
 }

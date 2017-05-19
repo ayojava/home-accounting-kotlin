@@ -3,7 +3,8 @@ package com.hfluz.accounting.controller
 import com.hfluz.accounting.dao.TransacaoDAO
 import com.hfluz.accounting.model.agreggation.ResumoMesTransacao
 import com.hfluz.accounting.model.enumeration.TipoTransacao
-import java.math.BigDecimal
+import com.hfluz.accounting.util.somarTransacoes
+import com.hfluz.accounting.util.getMonthAndYear
 import java.time.LocalDate
 import java.util.*
 import javax.enterprise.context.RequestScoped
@@ -21,15 +22,14 @@ class ResumoUltimosMesesController(var resumoMesTransacoes: MutableList<ResumoMe
 
     fun init() {
         var localDate = LocalDate.now()
-        val anoAtual = localDate.year
-        val mesAtual = localDate.monthValue
+        val (mesAtual,anoAtual) = localDate.getMonthAndYear()
         localDate = localDate.minusMonths(6)
         while (localDate.year < anoAtual || (localDate.monthValue <= mesAtual && localDate.year == anoAtual)) {
             val transacoes = transacaoDAO.buscar(localDate.monthValue, localDate.year)
             resumoMesTransacoes.add(
                     ResumoMesTransacao(localDate.year, localDate.monthValue,
-                            transacoes.filter { TipoTransacao.RECEITA == it.tipoTransacao }.map { it.valor }.fold(BigDecimal.ZERO) { a, b -> a?.add(b) },
-                            transacoes.filter { TipoTransacao.DESPESA == it.tipoTransacao }.map { it.valor }.fold(BigDecimal.ZERO) { a, b -> a?.add(b) })
+                            somarTransacoes(transacoes,TipoTransacao.RECEITA),
+                            somarTransacoes(transacoes,TipoTransacao.DESPESA))
             )
             localDate = localDate.plusMonths(1)
         }
