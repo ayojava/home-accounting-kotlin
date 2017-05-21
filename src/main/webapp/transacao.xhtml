@@ -28,7 +28,8 @@
                     <h:form prependId="false">
                         <p:toolbar>
                             <p:toolbarGroup align="right">
-                                <p:commandButton value="Nova Transação" action="#{transacaoController.resetarTransacao()}"
+                                <p:commandButton value="Nova Transação"
+                                                 action="#{transacaoController.resetarTransacao()}"
                                                  update="transacaoDiv" oncomplete="PF('transacaoDlg').show()"/>
                             </p:toolbarGroup>
                         </p:toolbar>
@@ -54,23 +55,51 @@
                         </p:fieldset>
 
                         <p:dataTable id="datatable" value="#{transacaoController.transacoes}" var="t"
-                                     emptyMessage="Nenhuma transação foi encontrada para o mês/ano especificado.">
+                                     emptyMessage="Nenhuma transação foi encontrada para o mês/ano especificado."
+                                     widgetVar="transacoes_table">
                             <p:column headerText="Data" width="70">
                                 <h:outputText value="#{t.date}"/>
                             </p:column>
-                            <p:column headerText="Tipo Transação" width="115">
+                            <p:column headerText="Tipo Transação" width="115" filterBy="#{t.tipoTransacao}"
+                                      filterMatchMode="exact">
+                                <f:facet name="filter">
+                                    <p:selectOneMenu onchange="PF('transacoes_table').filter()" style="width: 80% !important;">
+                                        <f:selectItem itemLabel="Selecionar" itemValue="#{null}"
+                                                      noSelectionOption="true"/>
+                                        <f:selectItems value="#{TipoTransacao.values()}"/>
+                                    </p:selectOneMenu>
+                                </f:facet>
                                 #{t.tipoTransacao}
                             </p:column>
-                            <p:column headerText="Descrição">
-                                #{t.descricao} <span jsf:rendered="#{t.idPrimeiraParcela != null}"> (parcela #{t.parcela})</span>
+                            <p:column headerText="Descrição" filterBy="#{t.descricao}" filterMatchMode="contains"
+                                      filterStyle="width: 80%;">
+                                #{t.descricao} <span
+                                    jsf:rendered="#{t.idPrimeiraParcela != null}"> (parcela #{t.parcela})</span>
                             </p:column>
-                            <p:column headerText="Tipo Pagamento" width="115">
+                            <p:column headerText="Tipo Pagamento" width="115" filterBy="#{t.tipoPagamento}"
+                                      filterMatchMode="exact">
+                                <f:facet name="filter">
+                                    <p:selectOneMenu onchange="PF('transacoes_table').filter()" style="width: 80% !important;">
+                                        <f:selectItem itemLabel="Selecionar" itemValue="#{null}"
+                                                      noSelectionOption="true"/>
+                                        <f:selectItems value="#{TipoPagamento.values()}"/>
+                                    </p:selectOneMenu>
+                                </f:facet>
                                 #{t.tipoPagamento}
                             </p:column>
-                            <p:column headerText="Categoria" width="150">
+                            <p:column headerText="Categoria" width="150" filterBy="#{t.categoria}"
+                                      filterMatchMode="exact">
+                                <f:facet name="filter">
+                                    <p:selectOneMenu onchange="PF('transacoes_table').filter()" style="width: 80% !important;">
+                                        <f:selectItem itemLabel="Selecionar" itemValue="#{null}"
+                                                      noSelectionOption="true"/>
+                                        <f:selectItems value="#{CategoriaTransacao.values()}"/>
+                                    </p:selectOneMenu>
+                                </f:facet>
                                 #{t.categoria}
                             </p:column>
-                            <p:column headerText="Estabelecimento" width="200">
+                            <p:column headerText="Estabelecimento" width="200" filterBy="#{t.estabelecimento}"
+                                      filterMatchMode="startsWith" filterStyle="width: 80% !important;">
                                 #{t.estabelecimento}
                             </p:column>
                             <p:column headerText="Valor" width="90">
@@ -160,12 +189,13 @@
                                                 </p:selectOneMenu>
                                             </p:panelGrid>
                                         </div>
-                                        <p:panelGrid columns="2" rendered="#{TipoPagamento.CARTAO_CREDITO eq transacaoController.transacao.tipoPagamento}"
+                                        <p:panelGrid columns="2"
+                                                     rendered="#{TipoPagamento.CARTAO_CREDITO eq transacaoController.transacao.tipoPagamento}"
                                                      columnClasses="ui-grid-col-3,ui-grid-col-9"
                                                      layout="grid" styleClass="ui-panelgrid-blank">
                                             <p:outputLabel for="parcelas" value="Quantidade parcelas"/>
                                             <p:inputText id="parcelas"
-                                                           value="#{transacaoController.quantidadeParcelas}"  />
+                                                         value="#{transacaoController.quantidadeParcelas}"/>
                                         </p:panelGrid>
                                         <p:panelGrid columns="2"
                                                      columnClasses="ui-grid-col-3,ui-grid-col-9"
