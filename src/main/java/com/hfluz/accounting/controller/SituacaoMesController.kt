@@ -26,9 +26,9 @@ class SituacaoMesController : Serializable {
     @PostConstruct
     fun init() {
         val now = LocalDate.now()
-        val transacoes = transacaoDAO.buscar(now.monthValue, now.year)
-        val totalReceitas = somarTransacoes(transacoes,TipoTransacao.RECEITA)
-        val totalDespesas = somarTransacoes(transacoes,TipoTransacao.DESPESA)
+        val transacoes = transacaoDAO.buscar(now.year, now.monthValue)
+        val totalReceitas = somarTransacoes(transacoes, TipoTransacao.RECEITA)
+        val totalDespesas = somarTransacoes(transacoes, TipoTransacao.DESPESA)
         if (totalReceitas == BigDecimal.ZERO) {
             porcentagemOrcamento = 0
         } else if (totalDespesas >= totalReceitas) {

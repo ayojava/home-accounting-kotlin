@@ -49,7 +49,9 @@ class TransacaoController(val now: LocalDate = LocalDate.now(),
     }
 
     fun carregarTransacoes() {
-        transacoes = transacaoDAO.buscar(mes, ano)
+        if (mes == 0)
+            transacoes = transacaoDAO.buscar(ano)
+        else transacoes = transacaoDAO.buscar(ano, mes)
     }
 
     fun salvar() {
@@ -94,8 +96,8 @@ class TransacaoController(val now: LocalDate = LocalDate.now(),
     }
 
     val valorTotalReceitas: BigDecimal
-        get() = somarTransacoes(transacoes,TipoTransacao.RECEITA)
+        get() = somarTransacoes(transacoes, TipoTransacao.RECEITA)
 
     val valorTotalDespesas: BigDecimal
-        get() = somarTransacoes(transacoes,TipoTransacao.DESPESA)
+        get() = somarTransacoes(transacoes, TipoTransacao.DESPESA)
 }

@@ -24,10 +24,17 @@ open class TransacaoDAO {
                 .resultList.stream().findAny().orElse(null) as Transacao
     }
 
-    open fun buscar(mes: Int?, ano: Int?): List<Transacao> {
+    open fun buscar(ano: Int?, mes: Int?): List<Transacao> {
         return entityManager.createQuery(
                         "select t from Transacao t where year(t.date) = :ano and month(t.date) = :mes " + "order by t.tipoTransacao desc, t.date")
                 .setParameter("mes", mes)
+                .setParameter("ano", ano)
+                .resultList as List<Transacao>
+    }
+
+    open fun buscar(ano: Int?): List<Transacao> {
+        return entityManager.createQuery(
+                "select t from Transacao t where year(t.date) = :ano " + "order by t.tipoTransacao desc, t.date")
                 .setParameter("ano", ano)
                 .resultList as List<Transacao>
     }

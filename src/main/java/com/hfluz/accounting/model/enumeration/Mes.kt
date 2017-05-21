@@ -15,5 +15,6 @@ enum class Mes constructor(val codigo: Int, val nome: String) {
     SETEMBRO(9, "Setembro"),
     OUTUBRO(10, "Outubro"),
     NOVEMBRO(11, "Novembro"),
-    DEZEMBRO(12, "Dezembro")
+    DEZEMBRO(12, "Dezembro"),
+    TODOS(0,"Todos")
 }
