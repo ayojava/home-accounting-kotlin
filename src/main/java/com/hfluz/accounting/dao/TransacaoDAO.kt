@@ -45,7 +45,7 @@ open class TransacaoDAO {
         return entityManager.unwrap(Session::class.java).createQuery(
                 "select year(t.date) as ano, month(t.date) as mes,t.categoria as categoria,sum(t.valor) as valorTotal " +
                         "from Transacao t " +
-                        "where year(t.date) <= year(:proximoMes) and month(t.date) <= month(:proximoMes) " +
+                        "where (year(t.date) < year(:proximoMes) or (year(t.date) = year(:proximoMes) and month(t.date) <= month(:proximoMes))) " +
                         "and t.date >= :seisMesesAtras " +
                         "group by year(t.date),month(t.date),t.categoria " +
                         "order by year(t.date),month(t.date),t.categoria")
