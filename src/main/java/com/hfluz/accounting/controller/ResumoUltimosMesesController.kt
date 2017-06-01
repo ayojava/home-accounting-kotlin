@@ -21,7 +21,7 @@ class ResumoUltimosMesesController(var resumoMesTransacoes: MutableList<ResumoMe
     private lateinit var transacaoDAO: TransacaoDAO
 
     fun init() {
-        var localDate = LocalDate.now()
+        var localDate = LocalDate.now().plusMonths(1)
         val (mesAtual,anoAtual) = localDate.getMonthAndYear()
         localDate = localDate.minusMonths(6)
         while (localDate.year < anoAtual || (localDate.monthValue <= mesAtual && localDate.year == anoAtual)) {

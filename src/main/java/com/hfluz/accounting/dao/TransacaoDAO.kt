@@ -41,25 +41,27 @@ open class TransacaoDAO {
 
     open fun buscarDespesasPorAnoMesECategoria(): List<ChartTransacao> {
         val seisMesesAtras = LocalDate.now().withDayOfMonth(1).minusMonths(6)
+        val proximoMes = LocalDate.now().plusMonths(1)
         return entityManager.unwrap(Session::class.java).createQuery(
                 "select year(t.date) as ano, month(t.date) as mes,t.categoria as categoria,sum(t.valor) as valorTotal " +
                         "from Transacao t " +
-                        "where year(t.date) <= year(current_date) and month(t.date) <= month(current_date) " +
+                        "where year(t.date) <= year(:proximoMes) and month(t.date) <= month(:proximoMes) " +
                         "and t.date >= :seisMesesAtras " +
                         "group by year(t.date),month(t.date),t.categoria " +
                         "order by year(t.date),month(t.date),t.categoria")
                 .setResultTransformer(Transformers.aliasToBean(ChartTransacao::class.java))
                 .setParameter("seisMesesAtras", seisMesesAtras)
+                .setParameter("proximoMes", proximoMes)
                 .list() as List<ChartTransacao>
     }
 
     open fun buscarDespesasPorDiaDentroDoMes(): List<ChartTransacao> {
-        val quatroMesesAtras = LocalDate.now().withDayOfMonth(1).minusMonths(4)
+        val quatroMesesAtras = LocalDate.now().withDayOfMonth(1).minusMonths(5)
         return entityManager.unwrap(Session::class.java).createQuery(
                 "select day(t.date) as dia,sum(t.valor) as valorTotal " +
                         "from Transacao t " +
-                        "where year(t.date) <= year(current_date) and month(t.date) <= month(current_date) " +
-                        "and t.date >= :quatroMesesAtras and month(t.date) < month(current_date) and t.tipoTransacao = :tipoTransacao " +
+                        "where (year(t.date) < year(current_date) or (year(t.date) = year(current_date) and month(t.date) < month(current_date))) " +
+                        "and t.date >= :quatroMesesAtras and t.tipoTransacao = :tipoTransacao " +
                         "group by day(t.date) " +
                         "order by day(t.date)")
                 .setResultTransformer(Transformers.aliasToBean(ChartTransacao::class.java))
@@ -69,11 +71,11 @@ open class TransacaoDAO {
     }
 
     open fun buscarTransacoesPorAnoMesETipoTransacao(): List<ChartTransacao> {
-        val seisMesesAtras = LocalDate.now().withDayOfMonth(1).minusMonths(3)
+        val seisMesesAtras = LocalDate.now().withDayOfMonth(1).minusMonths(6)
         return entityManager.unwrap(Session::class.java).createQuery(
                 "select year(t.date) as ano, month(t.date) as mes,t.tipoTransacao as tipoTransacao,sum(t.valor) as valorTotal " +
                         "from Transacao t " +
-                        "where year(t.date) <= year(current_date) and month(t.date) <= (month(current_date)+1) " +
+                        "where (year(t.date) < year(current_date) or (year(t.date) = year(current_date) and month(t.date) <= (month(current_date)+1))) " +
                         "and t.date >= :seisMesesAtras " +
                         "group by year(t.date),month(t.date),t.tipoTransacao " +
                         "order by year(t.date),month(t.date),t.tipoTransacao")
