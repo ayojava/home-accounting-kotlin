@@ -74,14 +74,13 @@ class TransacaoController(val now: LocalDate = LocalDate.now(),
     private fun salvarTransacoesParcelamento() {
         var idPrimeiraParcela: Long? = null
         for (parcela in 1..quantidadeParcelas) {
+            transacao.parcela = parcela.toShort()
             if (idPrimeiraParcela == null) {
                 val transacaoSalva = transacaoDAO.salvar(transacao)
                 idPrimeiraParcela = transacaoSalva.id
                 transacaoSalva.idPrimeiraParcela = idPrimeiraParcela
-                transacaoSalva.parcela = 1.toShort()
                 transacaoDAO.salvar(transacaoSalva)
             } else {
-                transacao.parcela = parcela as? Short
                 transacao.idPrimeiraParcela = idPrimeiraParcela
                 transacaoDAO.salvar(transacao)
             }
